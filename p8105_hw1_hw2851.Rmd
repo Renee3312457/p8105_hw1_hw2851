@@ -3,26 +3,49 @@ title: "p8105_hw1_hw2851"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r include = FALSE}
+library(tidyverse)
+
 ```
 
-## R Markdown
+# Problem 1
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+set.seed(123)
 
-```{r cars}
-summary(cars)
+samp_df = tibble(
+  samp = rnorm(10, mean = 0),
+  logical_vector = samp > 0,
+  chara_vector = c("This", "is", "homework", "one", "from", "Renee", "This", "is", "a", "homework"),
+  fac_vector = factor(c("A", "A", "A", "B", "B", "B", "B", "C", "C", "C"))
+)
 ```
+The mean of samples drawn from the normal distribution is `r mean(pull(samp_df, samp))`.
+The mean of the logical vector is `r mean(pull(samp_df, logical_vector))`.
+The mean of the character vector is `r mean(pull(samp_df, chara_vector ))`.
+The mean of the factor vector is `r mean(pull(samp_df, fac_vector))`.
 
-## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+as.numeric(pull(samp_df,samp))
+as.numeric(pull(samp_df,logical_vector))
+as.numeric(pull(samp_df,chara_vector))
+as.numeric(pull(samp_df,fac_vector))
 ```
+The mean of the numeric vector, logical vector can be calculated directly but not character vector and factor vector. This can be partially explained by the as.numeric() cast result: there is no reasonable way to cast the character vector as a numeric vector, thus we also cannot take its mean. 
+However, although as.numeric() works for the factor vector, we still cannot take its mean. This is because factors are stored as numeric variable with their level internally -- they are not scalar, thus mean() cannot be applied on a factor vector.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Problem 2
+
+```{r}
+data("penguins", package = "palmerpenguins")
+```
+The data penguins is a data frame including the following columns: `r names(penguins)`. One sample from the data frame is as follows: `r penguins[10,]`.
+There are `r nrow(penguins)` rows and `r ncol(penguins)` columns.
+The mean of the flipper length is `r mean(penguins$flipper_length_mm, na.rm=TRUE)`.
+
+```{r}
+ggplot(penguins, aes(x = bill_length_mm, y = flipper_length_mm), na.rm = TRUE) + geom_point(aes(color = species), na.rm = TRUE)
+ggsave("penguins-scatter-plot.pdf")
+```
